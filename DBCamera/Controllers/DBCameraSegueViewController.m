@@ -60,7 +60,8 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self initVignetteFilter];
         
         _cropArray = @[ @320, @213, @240, @192, @180 ];
-        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
+//        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
+        _filtersList = @[];
         _filterMapping = @{ @0:[[GPUImageFilter alloc] init],
                             @1:[[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
                             @2:[[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"],
