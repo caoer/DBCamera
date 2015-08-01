@@ -50,6 +50,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
 @synthesize cameraSegueConfigureBlock = _cameraSegueConfigureBlock;
+@synthesize cropModeWhenInitial = _cropModeWhenInitial;
 
 - (id) initWithImage:(UIImage *)image thumb:(UIImage *)thumb
 {
@@ -131,7 +132,13 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self reset:YES];
     }
     
-    if ( _cropMode )
+    if (self.cropModeWhenInitial) {
+        [self setCropMode:YES];
+        [self setCropRect:_pFrame];
+        [self reset:YES];
+    }
+    
+    if ( _cropMode)
         [_cropButton setSelected:YES];
 }
 

@@ -44,6 +44,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 @synthesize selectedTintColor = _selectedTintColor;
 @synthesize cameraSegueConfigureBlock = _cameraSegueConfigureBlock;
 @synthesize cameraManager = _cameraManager;
+@synthesize cropModeWhenInitial = _cropModeWhenInitial;
 
 #pragma mark - Life cycle
 
@@ -60,22 +61,22 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 - (instancetype) initWithDelegate:(id<DBCameraViewControllerDelegate>)delegate cameraView:(id)camera
 {
     self = [super init];
-
+    
     if ( self ) {
         _processingPhoto = NO;
         _deviceOrientation = UIDeviceOrientationPortrait;
         if ( delegate )
             _delegate = delegate;
-
+        
         if ( camera )
             [self setCustomCamera:camera];
-
+        
         [self setUseCameraSegue:YES];
-
+        
         [self setTintColor:[UIColor whiteColor]];
         [self setSelectedTintColor:[UIColor cyanColor]];
     }
-
+    
     return self;
 }
 
@@ -83,27 +84,27 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-
+    
     [self.view setBackgroundColor:[UIColor blackColor]];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification object:nil];
-
+    
     NSError *error;
     if ( [self.cameraManager setupSessionWithPreset:AVCaptureSessionPresetPhoto error:&error] ) {
         if ( self.customCamera ) {
             if ( [self.customCamera respondsToSelector:@selector(previewLayer)] ) {
                 [(AVCaptureVideoPreviewLayer *)[self.customCamera valueForKey:@"previewLayer"] setSession:self.cameraManager.captureSession];
-
+                
                 if ( [self.customCamera respondsToSelector:@selector(delegate)] )
                     [self.customCamera setValue:self forKey:@"delegate"];
             }
-
+            
             [self.view addSubview:self.customCamera];
         } else
             [self.view addSubview:self.cameraView];
     }
-
+    
     id camera =_customCamera ?: _cameraView;
     [camera insertSubview:self.cameraGridView atIndex:1];
     
@@ -185,7 +186,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
         [_cameraView defaultInterface];
         [_cameraView setDelegate:self];
     }
-
+    
     return _cameraView;
 }
 
@@ -195,7 +196,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
         _cameraManager = [[DBCameraManager alloc] init];
         [_cameraManager setDelegate:self];
     }
-
+    
     return _cameraManager;
 }
 
@@ -209,7 +210,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
         [_cameraGridView setNumberOfRows:2];
         [_cameraGridView setAlpha:0];
     }
-
+    
     return _cameraGridView;
 }
 
@@ -231,8 +232,8 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 - (void) rotationChanged:(UIDeviceOrientation) orientation
 {
     if ( orientation != UIDeviceOrientationUnknown ||
-         orientation != UIDeviceOrientationFaceUp ||
-         orientation != UIDeviceOrientationFaceDown ) {
+        orientation != UIDeviceOrientationFaceUp ||
+        orientation != UIDeviceOrientationFaceDown ) {
         _deviceOrientation = orientation;
     }
 }
@@ -303,31 +304,32 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 - (void) captureImageDidFinish:(UIImage *)image withMetadata:(NSDictionary *)metadata
 {
     _processingPhoto = NO;
-
+    
     NSMutableDictionary *finalMetadata = [NSMutableDictionary dictionaryWithDictionary:metadata];
     finalMetadata[@"DBCameraSource"] = @"Camera";
-
+    
     if ( !self.useCameraSegue ) {
         if ( [_delegate respondsToSelector:@selector(camera:didFinishWithImage:withMetadata:)] )
             [_delegate camera:self didFinishWithImage:image withMetadata:finalMetadata];
     } else {
         CGFloat newW = 256.0;
         CGFloat newH = 340.0;
-
+        
         if ( image.size.width > image.size.height ) {
             newW = 340.0;
             newH = ( newW * image.size.height ) / image.size.width;
         }
-
+        
         DBCameraSegueViewController *segue = [[DBCameraSegueViewController alloc] initWithImage:image thumb:[UIImage returnImage:image withSize:(CGSize){ newW, newH }]];
         [segue setTintColor:self.tintColor];
         [segue setSelectedTintColor:self.selectedTintColor];
         [segue setForceQuadCrop:_forceQuadCrop];
+        [segue setCropModeWhenInitial:_cropModeWhenInitial];
         [segue enableGestures:YES];
         [segue setDelegate:self.delegate];
         [segue setCapturedImageMetadata:finalMetadata];
         [segue setCameraSegueConfigureBlock:self.cameraSegueConfigureBlock];
-
+        
         [self.navigationController pushViewController:segue animated:YES];
     }
 }
@@ -361,6 +363,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
             [library setTintColor:self.tintColor];
             [library setSelectedTintColor:self.selectedTintColor];
             [library setForceQuadCrop:_forceQuadCrop];
+            [library setCropModeWhenInitial:_cropModeWhenInitial];
             [library setDelegate:self.delegate];
             [library setUseCameraSegue:self.useCameraSegue];
             [library setCameraSegueConfigureBlock:self.cameraSegueConfigureBlock];
@@ -380,28 +383,28 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 {
     if ( _processingPhoto )
         return;
-
+    
     _processingPhoto = YES;
-
+    
     if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_0) {
         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-
+        
         if (status == AVAuthorizationStatusDenied || status == AVAuthorizationStatusRestricted) {
             [[[UIAlertView alloc] initWithTitle:DBCameraLocalizedStrings(@"general.error.title")
                                         message:DBCameraLocalizedStrings(@"cameraimage.nopolicy")
                                        delegate:nil
                               cancelButtonTitle:@"Ok"
                               otherButtonTitles:nil, nil] show];
-
+            
             return;
         }
         else if (status == AVAuthorizationStatusNotDetermined) {
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:nil];
-
+            
             return;
         }
     }
-
+    
     [self.cameraManager captureImageForDeviceOrientation:_deviceOrientation];
 }
 

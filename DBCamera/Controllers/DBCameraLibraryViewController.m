@@ -48,6 +48,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 @synthesize useCameraSegue = _useCameraSegue;
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
+@synthesize cropModeWhenInitial = _cropModeWhenInitial;
 
 - (id) init
 {
@@ -352,6 +353,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
                 [segue setTintColor:self.tintColor];
                 [segue setSelectedTintColor:self.selectedTintColor];
                 [segue setForceQuadCrop:_forceQuadCrop];
+                [segue setCropModeWhenInitial:self.cropModeWhenInitial];
                 [segue enableGestures:YES];
                 [segue setCapturedImageMetadata:metadata];
                 [segue setDelegate:weakSelf.delegate];

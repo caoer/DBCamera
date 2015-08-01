@@ -162,6 +162,7 @@
  */
 @property (nonatomic, assign) BOOL forceQuadCrop;
 
+@property (nonatomic, assign) BOOL cropModeWhenInitial;
 /**
  *  Set if Camera View Controller will use the camera segue
  */

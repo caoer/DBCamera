@@ -170,7 +170,8 @@ typedef void (^TableRowBlock)();
 - (void) openCameraWithForceQuad
 {
     DBCameraViewController *cameraController = [DBCameraViewController initWithDelegate:self];
-    [cameraController setForceQuadCrop:YES];
+//    [cameraController setForceQuadCrop:YES];
+    [cameraController setCropModeWhenInitial:YES];
     
     DBCameraContainerViewController *container = [[DBCameraContainerViewController alloc] initWithDelegate:self];
     [container setCameraViewController:cameraController];
