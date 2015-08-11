@@ -82,12 +82,13 @@
     [self addSubview:self.topContainerBar];
     [self addSubview:self.bottomContainerBar];
 
+    [self.topContainerBar addSubview:self.closeButton];
     [self.topContainerBar addSubview:self.cameraButton];
+//    [self.topContainerBar addSubview:self.gridButton];
     [self.topContainerBar addSubview:self.flashButton];
-    [self.topContainerBar addSubview:self.gridButton];
 
     [self.bottomContainerBar addSubview:self.triggerButton];
-    [self.bottomContainerBar addSubview:self.closeButton];
+    [self.bottomContainerBar addSubview:self.gridButton];
     [self.bottomContainerBar addSubview:self.photoLibraryButton];
 
     [self createGesture];
@@ -127,7 +128,7 @@
         [_photoLibraryButton.layer setCornerRadius:4];
         [_photoLibraryButton.layer setBorderWidth:1];
         [_photoLibraryButton.layer setBorderColor:RGBColor(0xffffff, .3).CGColor];
-        [_photoLibraryButton setFrame:(CGRect){ CGRectGetWidth(self.bounds) - 59, CGRectGetMidY(self.bottomContainerBar.bounds) - 22, 44, 44 }];
+        [_photoLibraryButton setFrame:(CGRect){ 25 , CGRectGetMidY(self.bottomContainerBar.bounds) - 22, 44, 44 }];
         [_photoLibraryButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin];
         [_photoLibraryButton addTarget:self action:@selector(libraryAction:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -171,7 +172,8 @@
         [_cameraButton setBackgroundColor:[UIColor clearColor]];
         [_cameraButton setImage:[[UIImage imageNamed:@"flip"] tintImageWithColor:self.tintColor] forState:UIControlStateNormal];
         [_cameraButton setImage:[[UIImage imageNamed:@"flip"] tintImageWithColor:self.selectedTintColor] forState:UIControlStateSelected];
-        [_cameraButton setFrame:(CGRect){ 25, 17.5f, 30, 30 }];
+//        [_cameraButton setFrame:(CGRect){ 25, 17.5f, 30, 30 }];
+        [_cameraButton setFrame:(CGRect){ CGRectGetWidth(self.bounds) - 59, CGRectGetMidY(self.bottomContainerBar.bounds) - 22, 44, 44 }];
         [_cameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
     }
 
@@ -185,7 +187,8 @@
         [_flashButton setBackgroundColor:[UIColor clearColor]];
         [_flashButton setImage:[[UIImage imageNamed:@"flash"] tintImageWithColor:self.tintColor] forState:UIControlStateNormal];
         [_flashButton setImage:[[UIImage imageNamed:@"flash"] tintImageWithColor:self.selectedTintColor] forState:UIControlStateSelected];
-        [_flashButton setFrame:(CGRect){ CGRectGetWidth(self.bounds) - 55, 17.5f, 30, 30 }];
+        [_flashButton setFrame:(CGRect){ 0, 0, 30, 30 }];
+        [_flashButton setCenter:(CGPoint){ CGRectGetMidX(self.topContainerBar.bounds), CGRectGetMidY(self.topContainerBar.bounds) }];
         [_flashButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin];
         [_flashButton addTarget:self action:@selector(flashTriggerAction:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -200,8 +203,10 @@
         [_gridButton setBackgroundColor:[UIColor clearColor]];
         [_gridButton setImage:[[UIImage imageNamed:@"cameraGrid"] tintImageWithColor:self.tintColor] forState:UIControlStateNormal];
         [_gridButton setImage:[[UIImage imageNamed:@"cameraGrid"] tintImageWithColor:self.selectedTintColor] forState:UIControlStateSelected];
-        [_gridButton setFrame:(CGRect){ 0, 0, 30, 30 }];
-        [_gridButton setCenter:(CGPoint){ CGRectGetMidX(self.topContainerBar.bounds), CGRectGetMidY(self.topContainerBar.bounds) }];
+//        [_gridButton setFrame:(CGRect){ 0, 0, 30, 30 }];
+//        [_gridButton setCenter:(CGPoint){ CGRectGetMidX(self.topContainerBar.bounds), CGRectGetMidY(self.topContainerBar.bounds) }];
+        [_gridButton setFrame:(CGRect){ CGRectGetWidth(self.bounds) - 55, 17.5f, 30, 30 }];
+
         [_gridButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin];
         [_gridButton addTarget:self action:@selector(addGridToCameraAction:) forControlEvents:UIControlEventTouchUpInside];
     }
