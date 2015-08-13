@@ -161,6 +161,7 @@
  *  Set if the Camera Segue has a force quad crop mode
  */
 @property (nonatomic, assign) BOOL forceQuadCrop;
+@property (nonatomic, assign) BOOL forceQuadCrop53;
 
 @property (nonatomic, assign) BOOL cropModeWhenInitial;
 /**

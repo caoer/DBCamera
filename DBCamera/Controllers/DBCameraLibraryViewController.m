@@ -45,6 +45,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 @implementation DBCameraLibraryViewController
 @synthesize cameraSegueConfigureBlock = _cameraSegueConfigureBlock;
 @synthesize forceQuadCrop = _forceQuadCrop;
+@synthesize forceQuadCrop53 = _forceQuadCrop53;
 @synthesize useCameraSegue = _useCameraSegue;
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
@@ -353,6 +354,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
                 [segue setTintColor:self.tintColor];
                 [segue setSelectedTintColor:self.selectedTintColor];
                 [segue setForceQuadCrop:_forceQuadCrop];
+                [segue setForceQuadCrop53:_forceQuadCrop53];
                 [segue setCropModeWhenInitial:self.cropModeWhenInitial];
                 [segue enableGestures:YES];
                 [segue setCapturedImageMetadata:metadata];

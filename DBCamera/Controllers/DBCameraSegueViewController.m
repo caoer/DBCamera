@@ -46,6 +46,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
 
 @implementation DBCameraSegueViewController
 @synthesize forceQuadCrop = _forceQuadCrop;
+@synthesize forceQuadCrop53 = _forceQuadCrop53;
 @synthesize useCameraSegue = _useCameraSegue;
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
@@ -61,7 +62,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self initVignetteFilter];
         
         _cropArray = @[ @320, @213, @240, @192, @180 ];
-//        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
+        //        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
         _filtersList = @[];
         _filterMapping = @{ @0:[[GPUImageFilter alloc] init],
                             @1:[[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
@@ -131,6 +132,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self setCropRect:_pFrame];
         [self reset:YES];
     }
+
     
     if (self.cropModeWhenInitial) {
         [self setCropMode:YES];
@@ -138,8 +140,20 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self reset:YES];
     }
     
-    if ( _cropMode)
+    if (_forceQuadCrop53) {
+        NSUInteger height = [_cropArray[3] integerValue];
+        CGFloat cropX = ( CGRectGetWidth( self.frameView.frame) - 320 ) * .5;
+        CGRect cropRect = (CGRect){ cropX, ( CGRectGetHeight( self.frameView.frame) - (CGRectGetHeight(self.bottomBar.frame) + height) ) * .5, 320, height };
+        
+        [self setCropMode:YES];
+        [self setCropRect:cropRect];
+        [self reset:YES];
+    }
+    if ( _cropMode) {
         [_cropButton setSelected:YES];
+    }
+    
+    _cropButton.hidden = YES;
 }
 
 - (void)didReceiveMemoryWarning
@@ -215,10 +229,10 @@ static const CGSize kFilterCellSize = { 75, 90 };
     [self.frameView setHidden:!_cropMode];
     
     // Only hide filters if quad crop is not forced, otherwise filters are not accessible
-    if (!_forceQuadCrop) {
+//    if (!_forceQuadCrop) {
         [self.bottomBar setHidden:!_cropMode];
         [self.filtersView setHidden:_cropMode];
-    }
+//    }
 }
 
 - (DBCameraFiltersView *) filtersView
@@ -251,7 +265,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [_navigationBar setUserInteractionEnabled:YES];
         [_navigationBar addSubview:self.useButton];
         [_navigationBar addSubview:self.retakeButton];
-        if ( !_forceQuadCrop )
+        if ( !_forceQuadCrop && ! _forceQuadCrop53)
             [_navigationBar addSubview:self.cropButton];
     }
     
@@ -265,7 +279,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [_bottomBar setBackgroundColor:[UIColor blackColor]];
         [_bottomBar setHidden:YES];
         
-        if ( !_forceQuadCrop ) {
+        if ( !_forceQuadCrop && !_forceQuadCrop53) {
             UIButton *actionsheetButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [actionsheetButton setFrame:_bottomBar.bounds];
             [actionsheetButton setBackgroundColor:[UIColor clearColor]];
