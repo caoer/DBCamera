@@ -19,13 +19,24 @@
 
 - (void) buildInterface
 {
-    [self addSubview:self.closeButton];
-    [self addSubview:self.triggerButton];
+    [self.bottomContainerBar addSubview:self.closeButton];
+    [self.bottomContainerBar addSubview:self.triggerButton];
     
     [self.previewLayer addSublayer:self.focusBox];
     [self.previewLayer addSublayer:self.exposeBox];
     
     [self createGesture];
+    
+    [self addSubview:self.topContainerBar];
+    [self addSubview:self.bottomContainerBar];
+    
+    self.topContainerBar.backgroundColor = [UIColor grayColor];
+    self.topContainerBar.frame = CGRectMake(0, 0, self.bounds.size.width, 60);
+    
+    self.bottomContainerBar.backgroundColor = [UIColor orangeColor];
+    self.bottomContainerBar.frame = CGRectMake(0, self.bounds.size.height - 107, self.bounds.size.width, 107);
+    
+    self.previewLayer.frame = CGRectMake(0, self.topContainerBar.frame.size.height, self.bounds.size.width, self.bounds.size.height - self.topContainerBar.bounds.size.height - self.bottomContainerBar.bounds.size.height);
 }
 
 - (UIButton *) closeButton
@@ -49,7 +60,7 @@
         [triggerButton setImage:[UIImage imageNamed:@"trigger"] forState:UIControlStateNormal];
         [triggerButton setFrame:(CGRect){ 0, 0, 66, 66 }];
         [triggerButton.layer setCornerRadius:33.0f];
-        [triggerButton setCenter:(CGPoint){ CGRectGetMidX(self.bounds), CGRectGetHeight(self.bounds) - 100 }];
+        [triggerButton setCenter:(CGPoint){ CGRectGetMidX(self.bottomContainerBar.bounds), CGRectGetHeight(self.bottomContainerBar.bounds) / 2}];
         [triggerButton addTarget:self action:@selector(triggerAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     

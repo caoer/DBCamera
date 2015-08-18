@@ -61,7 +61,8 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self initVignetteFilter];
         
         _cropArray = @[ @320, @213, @240, @192, @180 ];
-        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
+//        _filtersList = @[ @"normal", @"1977", @"amaro", @"grey", @"hudson", @"mayfair", @"nashville", @"valencia", @"contrastgrey", @"vignette" ];
+        _filtersList = @[];
         
         NSBundle *bundle = [NSBundle bundleForClass:self.class];
         NSURL *filter1977      = [NSURL fileURLWithPath:[bundle pathForResource:@"1977"      ofType:@"acv"]];
@@ -90,6 +91,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self setMinimumScale:.2];
         [self setMaximumScale:10];
         [self createInterface];
+        [self enableGestures:NO];
     }
     return self;
 }
@@ -137,8 +139,12 @@ static const CGSize kFilterCellSize = { 75, 90 };
     [super viewWillAppear:animated];
     
     if ( _forceQuadCrop ) {
+        NSUInteger height = 426;
+        CGFloat cropX = ( CGRectGetWidth( self.frameView.frame) - 320 ) * .5;
+        CGRect cropRect = (CGRect){ cropX, ( CGRectGetHeight( self.frameView.frame) - (CGRectGetHeight(self.bottomBar.frame) + height) ) * .5, 320, height };
+        
         [self setCropMode:YES];
-        [self setCropRect:_pFrame];
+        [self setCropRect:cropRect];
         [self reset:YES];
     }
     

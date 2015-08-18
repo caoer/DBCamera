@@ -322,7 +322,8 @@
         DBCameraSegueViewController *segue = [[DBCameraSegueViewController alloc] initWithImage:image thumb:[UIImage returnImage:image withSize:(CGSize){ newW, newH }]];
         [segue setTintColor:self.tintColor];
         [segue setSelectedTintColor:self.selectedTintColor];
-        [segue setForceQuadCrop:_forceQuadCrop];
+//        [segue setForceQuadCrop:_forceQuadCrop];
+        [segue setForceQuadCrop:YES];
         [segue enableGestures:YES];
         [segue setDelegate:self.delegate];
         [segue setCapturedImageMetadata:finalMetadata];
