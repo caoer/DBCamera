@@ -194,7 +194,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         if ( _cropMode )
             [self cropImage];
         else {
-            UIImage *transform = [_filterMapping[@(_selectedFilterIndex.row)] imageByFilteringImage:self.sourceImage];
+            UIImage *transform = self.sourceImage;
             [_delegate camera:self didFinishWithImage:transform withMetadata:self.capturedImageMetadata];
         }
     }
