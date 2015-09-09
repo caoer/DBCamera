@@ -213,7 +213,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         dispatch_async(dispatch_get_main_queue(), ^{
             UIImage *transform =  [UIImage imageWithCGImage:resultRef scale:1.0 orientation:UIImageOrientationUp];
             CGImageRelease(resultRef);
-            transform = [_filterMapping[@(_selectedFilterIndex.row)] imageByFilteringImage:transform];
+            // transform = [_filterMapping[@(_selectedFilterIndex.row)] imageByFilteringImage:transform];
             [_delegate camera:self didFinishWithImage:transform withMetadata:self.capturedImageMetadata];
         });
     });
