@@ -47,6 +47,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
 @implementation DBCameraSegueViewController
 @synthesize forceQuadCrop = _forceQuadCrop;
 @synthesize forceQuadCrop53 = _forceQuadCrop53;
+@synthesize forceQuadCrop56 = _forceQuadCrop56;
 @synthesize useCameraSegue = _useCameraSegue;
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
@@ -141,7 +142,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
     }
     
     if (_forceQuadCrop53) {
-        NSUInteger height = [_cropArray[3] integerValue];
+        NSUInteger height = [_cropArray[3] integerValue]; //192 : 320 = 3 : 5
         CGFloat cropX = ( CGRectGetWidth( self.frameView.frame) - 320 ) * .5;
         CGRect cropRect = (CGRect){ cropX, ( CGRectGetHeight( self.frameView.frame) - (CGRectGetHeight(self.bottomBar.frame) + height) ) * .5, 320, height };
         
@@ -149,6 +150,17 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [self setCropRect:cropRect];
         [self reset:YES];
     }
+    
+    if (_forceQuadCrop56) {
+        NSUInteger height = 384; //  : 320 = 6 : 5
+        CGFloat cropX = ( CGRectGetWidth( self.frameView.frame) - 320 ) * .5;
+        CGRect cropRect = (CGRect){ cropX, ( CGRectGetHeight( self.frameView.frame) - (CGRectGetHeight(self.bottomBar.frame) + height) ) * .5, 320, height };
+        
+        [self setCropMode:YES];
+        [self setCropRect:cropRect];
+        [self reset:YES];
+    }
+    
     if ( _cropMode) {
         [_cropButton setSelected:YES];
     }
@@ -265,7 +277,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [_navigationBar setUserInteractionEnabled:YES];
         [_navigationBar addSubview:self.useButton];
         [_navigationBar addSubview:self.retakeButton];
-        if ( !_forceQuadCrop && ! _forceQuadCrop53)
+        if ( !_forceQuadCrop && !_forceQuadCrop53 && !_forceQuadCrop56)
             [_navigationBar addSubview:self.cropButton];
     }
     
@@ -279,7 +291,7 @@ static const CGSize kFilterCellSize = { 75, 90 };
         [_bottomBar setBackgroundColor:[UIColor blackColor]];
         [_bottomBar setHidden:YES];
         
-        if ( !_forceQuadCrop && !_forceQuadCrop53) {
+        if ( !_forceQuadCrop && !_forceQuadCrop53 && !_forceQuadCrop56) {
             UIButton *actionsheetButton = [UIButton buttonWithType:UIButtonTypeCustom];
             [actionsheetButton setFrame:_bottomBar.bounds];
             [actionsheetButton setBackgroundColor:[UIColor clearColor]];

@@ -41,6 +41,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
 @synthesize cameraGridView = _cameraGridView;
 @synthesize forceQuadCrop = _forceQuadCrop;
 @synthesize forceQuadCrop53 = _forceQuadCrop53;
+@synthesize forceQuadCrop56 = _forceQuadCrop56;
 @synthesize tintColor = _tintColor;
 @synthesize selectedTintColor = _selectedTintColor;
 @synthesize cameraSegueConfigureBlock = _cameraSegueConfigureBlock;
@@ -326,6 +327,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
         [segue setSelectedTintColor:self.selectedTintColor];
         [segue setForceQuadCrop:_forceQuadCrop];
         [segue setForceQuadCrop53:_forceQuadCrop53];
+        [segue setForceQuadCrop56:_forceQuadCrop56];
         [segue setCropModeWhenInitial:_cropModeWhenInitial];
         [segue enableGestures:YES];
         [segue setDelegate:self.delegate];
@@ -366,6 +368,7 @@ NSLocalizedStringFromTable(key, @"DBCamera", nil)
             [library setSelectedTintColor:self.selectedTintColor];
             [library setForceQuadCrop:_forceQuadCrop];
             [library setForceQuadCrop53:_forceQuadCrop53];
+            [library setForceQuadCrop56:_forceQuadCrop56];
             [library setCropModeWhenInitial:_cropModeWhenInitial];
             [library setDelegate:self.delegate];
             [library setUseCameraSegue:self.useCameraSegue];

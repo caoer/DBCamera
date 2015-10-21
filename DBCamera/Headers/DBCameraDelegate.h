@@ -162,6 +162,7 @@
  */
 @property (nonatomic, assign) BOOL forceQuadCrop;
 @property (nonatomic, assign) BOOL forceQuadCrop53;
+@property (nonatomic, assign) BOOL forceQuadCrop56;
 
 @property (nonatomic, assign) BOOL cropModeWhenInitial;
 /**
