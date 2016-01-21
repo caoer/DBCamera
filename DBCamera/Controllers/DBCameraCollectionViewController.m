@@ -72,10 +72,16 @@
     
     if ( _items.count > 0) {
         __weak DBCollectionViewCell *blockItem = item;
-        [[[DBLibraryManager sharedInstance] defaultAssetsLibrary] assetForURL:(NSURL *)_items[indexPath.item]  resultBlock:^(ALAsset *asset) {
-            UIImage *image = [UIImage imageWithCGImage:[asset thumbnail]];
-            [blockItem.itemImage setImage:image];
-        } failureBlock:nil];
+        id aItem = self.items[indexPath.item];
+        if ([aItem isKindOfClass:[NSURL class]]) {
+            [[[DBLibraryManager sharedInstance] defaultAssetsLibrary] assetForURL:(NSURL *)_items[indexPath.item]  resultBlock:^(ALAsset *asset) {
+                UIImage *image = [UIImage imageWithCGImage:[asset thumbnail]];
+                [blockItem.itemImage setImage:image];
+            } failureBlock:nil];
+        }
+        else if ([aItem isKindOfClass:[UIImage class]]) {
+            blockItem.itemImage.image = aItem;
+        }
     }
     
     return item;
@@ -83,14 +89,22 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake((_collectionView.frame.size.width / kDBLibraryColumnsNumber) - 1.0f, (_collectionView.frame.size.width / kDBLibraryColumnsNumber) - 1.0f);
+    return CGSizeMake((_collectionView.frame.size.width / kDBLibraryColumnsNumber) - 1.0f, ((_collectionView.frame.size.width / kDBLibraryColumnsNumber) - 1.0f) * 4.0 /3.0);
 }
 
 #pragma mark - UICollectionViewDelegate
 
 - (void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [_collectionControllerDelegate collectionView:collectionView itemURL:(NSURL *)_items[indexPath.item]];
+    id item = _items[indexPath.item];
+    if ([item isKindOfClass:[UIImage class]]) {
+        if ([_collectionControllerDelegate respondsToSelector:@selector(collectionView:itemImage:indexPath:)]) {
+            [_collectionControllerDelegate collectionView:collectionView itemImage:item indexPath:indexPath];
+        }
+    }
+    else if ([item isKindOfClass:[NSURL class]]) {
+        [_collectionControllerDelegate collectionView:collectionView itemURL:(NSURL *)_items[indexPath.item] indexPath:indexPath];
+    }
 }
 
 @end

@@ -73,7 +73,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    // Do any additional setup after loading the view.
     [self.view setBackgroundColor:[UIColor blackColor]];
     [self.view addSubview:self.topContainerBar];
     [self.view addSubview:self.bottomContainerBar];
@@ -89,11 +89,11 @@
     
     [_pageViewController didMoveToParentViewController:self];
     [_pageViewController.view setFrame:(CGRect){ 0, CGRectGetMaxY(_topContainerBar.frame), CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) - ( CGRectGetHeight(_topContainerBar.frame) + CGRectGetHeight(_bottomContainerBar.frame) ) }];
-
+    
     [self.view addSubview:self.loading];
     [self.view setGestureRecognizers:_pageViewController.gestureRecognizers];
-	
-	[self loadLibraryGroups];
+    
+    [self loadLibraryGroups];
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -147,50 +147,58 @@
 - (void) loadLibraryGroups
 {
     if ( _isEnumeratingGroups )
-        return;
+    return;
     
     __weak NSMutableArray *blockItems = _items;
     __weak NSMutableDictionary *blockContainerMapping = _containersMapping;
     __weak typeof(self) blockSelf = self;
     __weak UIPageViewController *pageViewControllerBlock = _pageViewController;
-
+    
     __block NSUInteger blockPresentationIndex = _presentationIndex;
     __block BOOL isEnumeratingGroupsBlock = _isEnumeratingGroups;
     isEnumeratingGroupsBlock = YES;
-
+    
     [[DBLibraryManager sharedInstance] loadGroupsAssetWithBlock:^(BOOL success, NSArray *items) {
         if (!blockSelf) {
             return;
         }
-
+        
         if (success) {
             [blockSelf.loading removeFromSuperview];
-
+            
             if (items.count > 0) {
                 [blockItems removeAllObjects];
+                
+                NSMutableArray *itemsForCollectionViewController = [NSMutableArray array];
+                
+                if ([blockSelf.delegate respondsToSelector:@selector(firstItemImageForCameraViewController:)]) {
+                    UIImage *image = [blockSelf.delegate firstItemImageForCameraViewController:blockSelf];
+                    [itemsForCollectionViewController addObject:image];
+                }
                 [blockItems addObjectsFromArray:items];
                 [blockContainerMapping removeAllObjects];
-
+                
                 for (NSUInteger i = 0; i < blockItems.count; i++) {
                     DBCameraCollectionViewController *vc = [[DBCameraCollectionViewController alloc] initWithCollectionIdentifier:kItemIdentifier];
                     [vc setCurrentIndex:i];
-                    [vc setItems:(NSArray *) blockItems[i][@"groupAssets"]];
+                    [itemsForCollectionViewController addObjectsFromArray:(NSArray *) blockItems[i][@"groupAssets"]];
+                    [vc setItems:itemsForCollectionViewController.copy];
                     [vc setCollectionControllerDelegate:blockSelf];
-
+                    
                     blockContainerMapping[@(i)] = vc;
                 }
-
+                
                 NSInteger usedIndex = [blockSelf indexForSelectedItem];
                 blockPresentationIndex = (NSUInteger) (usedIndex >= 0 ? usedIndex : 0);
-
+                
                 [blockSelf setNavigationTitleAtIndex:blockPresentationIndex];
                 [blockSelf setSelectedItemID:blockItems[blockPresentationIndex][@"propertyID"]];
-
+                
                 [pageViewControllerBlock setViewControllers:@[blockContainerMapping[@(blockPresentationIndex)]]
                                                   direction:UIPageViewControllerNavigationDirectionForward
                                                    animated:NO
                                                  completion:nil];
-
+                
                 [UIView animateWithDuration:.3 animations:^{
                     [pageViewControllerBlock.view setAlpha:1];
                 }];
@@ -204,7 +212,7 @@
                 });
             }
         }
-
+        
         isEnumeratingGroupsBlock = NO;
     }];
 }
@@ -219,7 +227,7 @@
 {
     __weak typeof(self) blockSelf = self;
     __block NSInteger blockIndex = -1;
-
+    
     [_items enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ( [blockSelf.selectedItemID isEqualToString:obj[@"propertyID"]] ) {
             *stop = YES;
@@ -236,7 +244,7 @@
         [self dismissViewControllerAnimated:YES completion:nil];
         return;
     }
-        
+    
     [UIView animateWithDuration:.3 animations:^{
         [self.view setAlpha:0];
         [self.view setTransform:CGAffineTransformMakeScale(.8, .8)];
@@ -248,7 +256,7 @@
 - (void) setLibraryMaxImageSize:(NSUInteger)libraryMaxImageSize
 {
     if ( libraryMaxImageSize > 0 )
-        _libraryMaxImageSize = libraryMaxImageSize;
+    _libraryMaxImageSize = libraryMaxImageSize;
 }
 
 - (UIView *) loading
@@ -310,7 +318,7 @@
     _vcIndex = vc.currentIndex;
     
     if ( _vcIndex == 0 )
-        return nil;
+    return nil;
     
     DBCameraCollectionViewController *beforeVc = _containersMapping[@(_vcIndex - 1)];
     [beforeVc.collectionView reloadData];
@@ -323,7 +331,7 @@
     _vcIndex = vc.currentIndex;
     
     if ( _vcIndex == (_items.count - 1) )
-        return nil;
+    return nil;
     
     DBCameraCollectionViewController *nextVc = _containersMapping[@(_vcIndex + 1)];
     [nextVc.collectionView reloadData];
@@ -340,12 +348,22 @@
 }
 
 #pragma mark - DBCameraCollectionControllerDelegate
+- (void)collectionView:(UICollectionView *)collectionView itemImage:(UIImage *)image indexPath:(NSIndexPath *)indexPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __weak typeof(self) weakSelf = self;
+        if (indexPath.row == 0 && indexPath.section == 0) {
+            if ([weakSelf.delegate respondsToSelector:@selector(cameraDidChooseFirstItem:)]) {
+                [weakSelf.delegate cameraDidChooseFirstItem:self];
+            }
+        }
+    });
+}
 
-- (void) collectionView:(UICollectionView *)collectionView itemURL:(NSURL *)URL
+- (void) collectionView:(UICollectionView *)collectionView itemURL:(NSURL *)URL indexPath:(NSIndexPath *)indexPath
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.view addSubview:self.loading];
-
+        
         __weak typeof(self) weakSelf = self;
         [[[DBLibraryManager sharedInstance] defaultAssetsLibrary] assetForURL:URL resultBlock:^(ALAsset *asset) {
             ALAssetRepresentation *defaultRep = [asset defaultRepresentation];
@@ -354,13 +372,14 @@
             if ([defaultRep url]) {
                 metadata[@"DBCameraAssetURL"] = [[defaultRep url] absoluteString];
             }
-
+            
             UIImage *image = [UIImage imageForAsset:asset maxPixelSize:_libraryMaxImageSize];
-//            UIImage *image = [self test:asset];
+            //            UIImage *image = [self test:asset];
             
             if ( !weakSelf.useCameraSegue ) {
-                if ( [weakSelf.delegate respondsToSelector:@selector(camera:didFinishWithImage:withMetadata:)] )
+                if ( [weakSelf.delegate respondsToSelector:@selector(camera:didFinishWithImage:withMetadata:)] ) {
                     [weakSelf.delegate camera:self didFinishWithImage:image withMetadata:metadata];
+                }
             } else {
                 DBCameraSegueViewController *segue = [[DBCameraSegueViewController alloc] initWithImage:image thumb:[UIImage imageWithCGImage:[asset aspectRatioThumbnail]]];
                 [segue setTintColor:self.tintColor];

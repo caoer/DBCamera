@@ -239,4 +239,11 @@ typedef void (^TableRowBlock)();
     [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (UIImage *)firstItemImageForCameraViewController:(id)cameraViewController {
+    return [UIImage imageNamed:@"huawo-select-photo-taking-photo"];
+}
+
+- (void)cameraDidChooseFirstItem:(id)cameraViewController {
+    NSLog(@"choose first item");
+}
 @end

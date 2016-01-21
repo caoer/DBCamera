@@ -106,6 +106,10 @@
  *  Tells the delegate when the camera must be dismissed
  */
 - (void) dismissCamera:(id)cameraViewController;
+
+- (void) cameraDidChooseFirstItem:(id)cameraViewController;
+
+- (UIImage *)firstItemImageForCameraViewController:(id)cameraViewController;
 @end
 
 /**
@@ -139,7 +143,10 @@
  *  @param collectionView The collection view
  *  @param URL            The NSURL of the Asset
  */
-- (void) collectionView:(UICollectionView *)collectionView itemURL:(NSURL *)URL;
+- (void) collectionView:(UICollectionView *)collectionView itemURL:(NSURL *)URL indexPath:(NSIndexPath *)indexPath;
+
+@optional
+- (void) collectionView:(UICollectionView *)collectionView itemImage:(UIImage *)image indexPath:(NSIndexPath *)indexPath;
 @end
 
 /**
