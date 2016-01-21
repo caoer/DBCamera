@@ -149,4 +149,6 @@
  *  @param scale The scale value
  */
 - (void) pinchCameraViewWithScalNum:(CGFloat)scale;
+
+- (void)setupVolumnButton;
 @end

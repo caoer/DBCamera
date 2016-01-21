@@ -19,6 +19,9 @@
 // pinch
 #define MAX_PINCH_SCALE_NUM   3.f
 #define MIN_PINCH_SCALE_NUM   1.f
+@interface DBCameraView()
+@end
+
 
 @implementation DBCameraView{
     CGFloat preScaleNum;
@@ -92,6 +95,10 @@
     [self.bottomContainerBar addSubview:self.photoLibraryButton];
 
     [self createGesture];
+    
+    if ([self respondsToSelector:@selector(setupVolumnButton)]) {
+        [self setupVolumnButton];
+    }
 }
 
 #pragma mark - Containers
